@@ -8,21 +8,132 @@
 (($, window, document) ->
   pluginName = 'pieces'
   defaults =
-    property: 'value'
+    pieces:   5
+    interval: 500
+    duration: 1000
 
   class Plugin
     constructor: (@element, options) ->
-      @options = $.extend {}, defaults, options
+      @options    = $.extend {}, defaults, options
+      @_defaults  = defaults
+      @_name      = pluginName
+      @$el        = $ @element
 
-      @_defaults = defaults
-      @_name = pluginName
+      @init options
 
-      @init()
+    init: (options)->
+      if not @$el.filter('ul').length < 1
+        if options is 'next' or options is 'prev'
+          @plugin  = @$el.data("plugin_#{@_name}")
+          @height   = @plugin.height
+          @width    = @plugin.width
+          @prev_or_next options
+        else
+          @_prepare()
+      else if @$el.filter('li').length > 0 and @$el.parent().data("plugin_#{@_name}")
+        @plugin  = @$el.parent().data("plugin_#{@_name}")
+        @height   = @plugin.height
+        @width    = @plugin.width
+        @move_me @$el, options
 
-    init: ->
+    _prepare: ->
+      @images = @$el.find 'img'
+      @images.filter(':first').load =>
+        @height   = @images.height()
+        @width    = @images.width()
+        @$el.css
+          height:   @height
+          overflow: 'hidden'
+          display:  'block'
+          position: 'relative'
+        .find('li').css
+          display:  'block'
+          position: 'absolute'
+          top:      0
+        @_split_all()
+        @start()
+      @images.hide()
+
+    _split_all: ->
+      for li in @$el.find('li')
+        $li       = $ li
+        $image    = $li.find('img:first')
+        image_src = $image.attr('src')
+        pieces    = @options.pieces
+        $pieces   = $('<div class="pieces"></div>').appendTo($li)
+        $li.data('piece-image-bg', image_src)
+        for i in [1..pieces]
+          $piece     = $('<div class="piece"></div>').appendTo($pieces)
+          piece_w   = @width/pieces
+          piece_h   = @height
+          bg_x_pos  = (i-1)*piece_w
+          
+          $piece.data('bg_x_pos', bg_x_pos)
+          $piece.css
+            backgroundImage:    "url(#{image_src})"
+            backgroundRepeat:   'no-repeat'
+            backgroundPosition: "-#{bg_x_pos}px -#{piece_h}px"
+            opacity:            0
+            height:             piece_h
+            width:              piece_w
+            float:              'left'
+
+    start: ->
+      @show_me @$el.find('li:first'), 'show'
+
+    prev: -> @prev_or_next('prev')
+    next: -> @prev_or_next('next')
+    prev_or_next: (direction)->
+      filter =
+        next: 'first'
+        prev: 'last'
+      $target = @$el.find('.current')[direction]()
+      $target = @$el.find('li:'+filter[direction]) if $target.length < 1
+      @show_me $target
+    show_me: ($li) ->
+      $li = $ $li
+      return if $($li).filter('li').length is not 1
+      
+      $old_current = $li.parent().find('.current')
+
+      $old_current.removeClass('current').css 'z-index', 9
+      $li.addClass('current').css 'z-index', 10
+
+      @move_me $old_current, 'top' if $old_current.length > 0
+      @move_me $li, 'show'
+
+    move_me: ($li, action, callback) ->
+      $li = $ $li
+      return if $($li).filter('li').length is not 1
+
+      y_coord =
+        show:   0
+        top:    -@height
+        bottom: @height
+
+      opacity =
+        show:   1
+        top:    0
+        bottom: 0
+
+      return if not y_coord[action]?
+
+      delay         = 0
+      $pieces       = $li.find('.pieces .piece')
+      $pieces.not(':last').bind 'positioned', -> console.log 'positioned'
+      $pieces.filter(':last').bind 'positioned', ->
+        callback.call() if callback? and callback.call?
+      
+      for piece in $pieces
+        delay     += @options.interval
+        $piece    = $ piece
+        bg_x_pos  = $piece.data('bg_x_pos')
+        $piece.stop().delay(delay).animate
+          backgroundPosition: "-#{bg_x_pos}px #{y_coord[action]}px"
+          opacity: opacity[action]
+        , @options.duration, ->
+          $(this).trigger 'positioned'
 
   $.fn[pluginName] = (options) ->
-    @each ->
-      if !$.data(this, "plugin_#{pluginName}")
-        $.data(@, "plugin_#{pluginName}", new Plugin(@, options))
+    @each -> $.data(@, "plugin_#{pluginName}", new Plugin(@, options))
 )(jQuery, window, document)

@@ -1,0 +1,3 @@
+[submodule "livereload"]
+	path = livereload
+	url = https://github.com/navaru/LiveReload.git
