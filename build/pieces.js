@@ -131,7 +131,8 @@
       };
 
       Plugin.prototype.move_me = function($li, action, callback) {
-        var $piece, $pieces, bg_x_pos, delay, opacity, piece, y_coord, _i, _len, _results;
+        var $pieces, delay, opacity, piece, y_coord, _i, _len, _results,
+          _this = this;
         $li = $($li);
         if ($($li).filter('li').length === !1) return;
         y_coord = {
@@ -158,15 +159,21 @@
         _results = [];
         for (_i = 0, _len = $pieces.length; _i < _len; _i++) {
           piece = $pieces[_i];
-          delay += this.options.interval;
-          $piece = $(piece);
-          bg_x_pos = $piece.data('bg_x_pos');
-          _results.push($piece.stop().delay(delay).animate({
-            backgroundPosition: "-" + bg_x_pos + "px " + y_coord[action] + "px",
-            opacity: opacity[action]
-          }, this.options.duration, function() {
-            return $(this).trigger('positioned');
-          }));
+          _results.push((function() {
+            var $piece, bg_x_pos, duration;
+            delay += _this.options.interval;
+            $piece = $(piece);
+            bg_x_pos = $piece.data('bg_x_pos');
+            duration = _this.options.duration;
+            return setTimeout(function() {
+              return $piece.stop().animate({
+                backgroundPosition: "-" + bg_x_pos + "px " + y_coord[action] + "px",
+                opacity: opacity[action]
+              }, duration, function() {
+                return $(this).trigger('positioned');
+              });
+            }, delay);
+          })());
         }
         return _results;
       };

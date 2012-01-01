@@ -125,14 +125,18 @@
         callback.call() if callback? and callback.call?
       
       for piece in $pieces
-        delay     += @options.interval
-        $piece    = $ piece
-        bg_x_pos  = $piece.data('bg_x_pos')
-        $piece.stop().delay(delay).animate
-          backgroundPosition: "-#{bg_x_pos}px #{y_coord[action]}px"
-          opacity: opacity[action]
-        , @options.duration, ->
-          $(this).trigger 'positioned'
+        do =>
+          delay     += @options.interval
+          $piece    = $ piece
+          bg_x_pos  = $piece.data('bg_x_pos')
+          duration  = @options.duration
+          setTimeout ->
+            $piece.stop().animate
+              backgroundPosition: "-#{bg_x_pos}px #{y_coord[action]}px"
+              opacity: opacity[action]
+            , duration, ->
+              $(this).trigger 'positioned'
+          , delay
 
   $.fn[pluginName] = (options) ->
     @each -> $.data(@, "plugin_#{pluginName}", new Plugin(@, options))
