@@ -132,7 +132,7 @@
           duration  = @options.duration
           setTimeout ->
             $piece.stop().animate
-              backgroundPosition: "-#{bg_x_pos}px #{y_coord[action]}px"
+              backgroundPositionY: "#{y_coord[action]}px"
               opacity: opacity[action]
             , duration, ->
               $(this).trigger 'positioned'

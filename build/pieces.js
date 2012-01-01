@@ -167,7 +167,7 @@
             duration = _this.options.duration;
             return setTimeout(function() {
               return $piece.stop().animate({
-                backgroundPosition: "-" + bg_x_pos + "px " + y_coord[action] + "px",
+                backgroundPositionY: "" + y_coord[action] + "px",
                 opacity: opacity[action]
               }, duration, function() {
                 return $(this).trigger('positioned');
