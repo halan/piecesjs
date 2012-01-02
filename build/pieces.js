@@ -23,6 +23,7 @@
         if (!this.$el.filter('ul').length < 1) {
           if (options === 'next' || options === 'prev') {
             this.plugin = this.$el.data("plugin_" + this._name);
+            this.options = this.plugin.options;
             this.height = this.plugin.height;
             this.width = this.plugin.width;
             return this.prev_or_next(options);
@@ -31,6 +32,7 @@
           }
         } else if (this.$el.filter('li').length > 0 && this.$el.parent().data("plugin_" + this._name)) {
           this.plugin = this.$el.parent().data("plugin_" + this._name);
+          this.options = this.plugin.options;
           this.height = this.plugin.height;
           this.width = this.plugin.width;
           return this.move_me(this.$el, options);

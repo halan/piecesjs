@@ -24,14 +24,16 @@
     init: (options)->
       if not @$el.filter('ul').length < 1
         if options is 'next' or options is 'prev'
-          @plugin  = @$el.data("plugin_#{@_name}")
+          @plugin   = @$el.data("plugin_#{@_name}")
+          @options  = @plugin.options
           @height   = @plugin.height
           @width    = @plugin.width
           @prev_or_next options
         else
           @_prepare()
       else if @$el.filter('li').length > 0 and @$el.parent().data("plugin_#{@_name}")
-        @plugin  = @$el.parent().data("plugin_#{@_name}")
+        @plugin   = @$el.parent().data("plugin_#{@_name}")
+        @options  = @plugin.options
         @height   = @plugin.height
         @width    = @plugin.width
         @move_me @$el, options
