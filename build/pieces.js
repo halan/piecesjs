@@ -130,52 +130,48 @@
         return this.move_me($li, 'show');
       };
 
-      Plugin.prototype.move_me = function($li, action, callback) {
-        var $pieces, delay, opacity, piece, y_coord, _i, _len, _results,
+      Plugin.prototype.move_me = function($li, action) {
+        var $pieces, $ul, delay, piece, _i, _len, _results,
           _this = this;
         $li = $($li);
         if ($($li).filter('li').length === !1) return;
-        y_coord = {
-          show: 0,
-          top: -this.height,
-          bottom: this.height
-        };
-        opacity = {
-          show: 1,
-          top: 0,
-          bottom: 0
-        };
-        if (!(y_coord[action] != null)) return;
+        $ul = $li.parent();
         delay = 0;
         $pieces = $li.find('.pieces .piece');
-        $pieces.not(':last').bind('positioned', function() {
-          return console.log('positioned');
-        });
-        $pieces.filter(':last').bind('positioned', function() {
-          if ((callback != null) && (callback.call != null)) {
-            return callback.call();
-          }
+        $ul.trigger('start-animation');
+        $pieces.filter(':last').bind('end-piece-animation', function() {
+          return $ul.trigger('end-animation');
         });
         _results = [];
         for (_i = 0, _len = $pieces.length; _i < _len; _i++) {
           piece = $pieces[_i];
           _results.push((function() {
-            var $piece, bg_x_pos, duration;
+            var $piece, bg_y_pos, duration, opacity;
             delay += _this.options.interval;
             $piece = $(piece);
-            bg_x_pos = $piece.data('bg_x_pos');
             duration = _this.options.duration;
+            bg_y_pos = _this.y_coord(action);
+            opacity = action === 'show' ? 1 : 0;
             return setTimeout(function() {
+              $piece.trigger('start-piece-animation');
               return $piece.stop().animate({
-                backgroundPositionY: "" + y_coord[action] + "px",
-                opacity: opacity[action]
+                backgroundPositionY: bg_y_pos + 'px',
+                opacity: opacity
               }, duration, function() {
-                return $(this).trigger('positioned');
+                return $piece.trigger('end-piece-animation');
               });
             }, delay);
           })());
         }
         return _results;
+      };
+
+      Plugin.prototype.y_coord = function(action) {
+        return {
+          show: 0,
+          top: -this.height,
+          bottom: this.height
+        }[action];
       };
 
       return Plugin;

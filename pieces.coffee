@@ -82,7 +82,9 @@
       @show_me @$el.find('li:first'), 'show'
 
     prev: -> @prev_or_next('prev')
+
     next: -> @prev_or_next('next')
+
     prev_or_next: (direction)->
       filter =
         next: 'first'
@@ -90,6 +92,7 @@
       $target = @$el.find('.current')[direction]()
       $target = @$el.find('li:'+filter[direction]) if $target.length < 1
       @show_me $target
+
     show_me: ($li) ->
       $li = $ $li
       return if $($li).filter('li').length is not 1
@@ -102,41 +105,41 @@
       @move_me $old_current, 'top' if $old_current.length > 0
       @move_me $li, 'show'
 
-    move_me: ($li, action, callback) ->
+    move_me: ($li, action) ->
       $li = $ $li
       return if $($li).filter('li').length is not 1
 
-      y_coord =
-        show:   0
-        top:    -@height
-        bottom: @height
-
-      opacity =
-        show:   1
-        top:    0
-        bottom: 0
-
-      return if not y_coord[action]?
-
+      $ul           = $li.parent()
       delay         = 0
       $pieces       = $li.find('.pieces .piece')
-      $pieces.not(':last').bind 'positioned', -> console.log 'positioned'
-      $pieces.filter(':last').bind 'positioned', ->
-        callback.call() if callback? and callback.call?
+
+      $ul.trigger 'start-animation'
+      $pieces.filter(':last').bind 'end-piece-animation', ->
+        $ul.trigger 'end-animation'
       
       for piece in $pieces
         do =>
           delay     += @options.interval
           $piece    = $ piece
-          bg_x_pos  = $piece.data('bg_x_pos')
           duration  = @options.duration
+          bg_y_pos  = @y_coord action
+          opacity   = if action is 'show' then 1 else 0
+
           setTimeout ->
+            $piece.trigger 'start-piece-animation'
             $piece.stop().animate
-              backgroundPositionY: "#{y_coord[action]}px"
-              opacity: opacity[action]
+              backgroundPositionY: bg_y_pos+'px'
+              opacity: opacity
             , duration, ->
-              $(this).trigger 'positioned'
+              $piece.trigger 'end-piece-animation'
           , delay
+    
+    y_coord: (action)->
+      (
+        show:   0
+        top:    -@height
+        bottom: @height
+      )[action]
 
   $.fn[pluginName] = (options) ->
     @each -> $.data(@, "plugin_#{pluginName}", new Plugin(@, options))
