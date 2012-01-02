@@ -17,6 +17,46 @@
       width: 700px;
     }
 
+    #example
+    {
+      width: 300px;
+      height: 300px;
+      position: relative;
+      border: 5px solid black;
+      background: #333;
+    }
+
+    #example ul
+    {
+      margin: 0; padding: 0;
+      list-style: none;
+    }
+
+    #example #controls
+    {
+      position: absolute;
+      bottom: 0;
+      width: 300px;
+      height: 30px;
+      z-index: 30;
+      background: black;
+      background: rgba(0, 0, 0, .5)
+    }
+
+    #example #controls a
+    {
+      position: absolute;
+      color: white;
+      text-decoration: none;
+      padding: 4px;
+      z-index: 30;
+    }
+
+    #example #controls #next
+    {
+      right: 0;
+    }
+
     h1 { font-size: 3.8em; color: #271b27; margin-bottom: 3px; }
     h1 .small { font-size: 0.4em; }
     h1 a { text-decoration: none }
@@ -36,11 +76,11 @@
    <script type="text/javascript" charset="utf-8">
      $(function()
      {
-      $('#pieces').pieces({pieces: 10, duration: 500})
+      $('#pieces').pieces({pieces: 20, duration: 10, interval: 50})
         .click(function(){ $('#pieces').pieces('next')});
       $('#next').click(function(){ $('#pieces').pieces('next')});
       $('#prev').click(function(){ $('#pieces').pieces('prev')});
-      setInterval(function(){ $('#pieces').pieces('next'); }, 5000);
+      setInterval(function(){ $('#pieces').pieces('next'); }, 10000);
 
      });
    </script>
@@ -67,39 +107,44 @@
     </div>
 
       <h2>Example</h2>
-      <ul id="pieces">
-        <li>
-          <img src="http://lorempixel.com/300/300/sports/1"/>
-        </li>
-        <li>
-          <img src="http://lorempixel.com/300/300/sports/2"/>
-        </li>
-        <li>
-          <img src="http://lorempixel.com/300/300/sports/3"/>
-        </li>
-        <li>
-          <img src="http://lorempixel.com/300/300/sports/4"/>
-        </li>
-         <li>
-          <img src="http://lorempixel.com/300/300/sports/5"/>
-        </li>
-         <li>
-          <img src="http://lorempixel.com/300/300/sports/6"/>
-        </li>
-        <li>
-          <img src="http://lorempixel.com/300/300/sports/7"/>
-        </li>
-         <li>
-          <img src="http://lorempixel.com/300/300/sports/8"/>
-        </li>
-        <li>
-          <img src="http://lorempixel.com/300/300/sports/9"/>
-        </li>
-         <li>
-          <img src="http://lorempixel.com/300/300/sports/10"/>
-        </li>
-      </ul>
-      <a id="prev" href="#">Prev</a> | <a id="next" href="#">Next</a>
+      <div id="example">
+        <ul id="pieces">
+          <li>
+            <img src="http://lorempixel.com/300/300/sports/1"/>
+          </li>
+          <li>
+            <img src="http://lorempixel.com/300/300/sports/2"/>
+          </li>
+          <li>
+            <img src="http://lorempixel.com/300/300/sports/3"/>
+          </li>
+          <li>
+            <img src="http://lorempixel.com/300/300/sports/4"/>
+          </li>
+           <li>
+            <img src="http://lorempixel.com/300/300/sports/5"/>
+          </li>
+           <li>
+            <img src="http://lorempixel.com/300/300/sports/6"/>
+          </li>
+          <li>
+            <img src="http://lorempixel.com/300/300/sports/7"/>
+          </li>
+           <li>
+            <img src="http://lorempixel.com/300/300/sports/8"/>
+          </li>
+          <li>
+            <img src="http://lorempixel.com/300/300/sports/9"/>
+          </li>
+           <li>
+            <img src="http://lorempixel.com/300/300/sports/10"/>
+          </li>
+        </ul>
+        <div id="controls">
+          <a id="prev" href="#">Prev</a>
+          <a id="next" href="#">Next</a>
+        </div>
+      </div>
     
       <h2>Authors</h2>
       <p>Halan Pinheiro (halan.pinheiro@gmail.com)<br/>      </p>
